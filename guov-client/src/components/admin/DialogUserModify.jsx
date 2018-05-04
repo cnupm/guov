@@ -1,7 +1,7 @@
 import React from 'react';
 import {styles} from '../AdminForm';
 import TextField from 'material-ui/TextField';
-import RaisedButton from 'material-ui/RaisedButton';
+import FlatButton from 'material-ui/FlatButton';
 import Checkbox from 'material-ui/Checkbox';
 import Dialog from 'material-ui/Dialog';
 import { Table, TableBody, TableRow, TableRowColumn} from 'material-ui/Table';
@@ -34,8 +34,11 @@ class DialogueUserModify extends React.Component {
     }
 
     onCancelClick = () => {
-        console.log('ued cancelled');
         this.props.onRequestClose(true);
+    }
+
+    onSaveClick = () => {
+        this.props.onRequestClose(false);
     }
 
     onUserRightSelected = (rows) => {
@@ -44,18 +47,34 @@ class DialogueUserModify extends React.Component {
     }
 
     render(){
+        const actions = [
+            <FlatButton
+              label="Сохранить"
+              primary={true}
+              onClick={this.onSaveClick}/>,
+            <FlatButton
+              label="Отмена"
+              primary={false}
+              keyboardFocused={true}
+              onClick={this.onCancelClick}/>
+        ];
         return <Dialog
             title={"Редактирование пользователя: " + this.props.user.email}
             modal={false}
             open={true}
             onRequestClose={this.props.onRequestClose}
-            autoScrollBodyContent={true}>
+            actions={actions}
+            autoScrollBodyContent={true}
+            contentStyle={ styles.dialogContent }
+            bodyStyle={ styles.dialogBody }
+            style={ styles.dialogRoot }
+            repositionOnUpdate={ false }>
         <Grid fluid>
             <Row>
                 <Col>
                     <Subheader>Основные параметры учетной записи:</Subheader>
                     <TextField floatingLabelText="Email пользователя" defaultValue={this.props.user.email} style={styles.spaced}/>
-                    <TextField floatingLabelText="Установить пароль" />
+                    <TextField floatingLabelText="Установить пароль" id="userPassword" />
                     <Subheader>Статус блокировки:</Subheader>
                     <Checkbox label="Пользователь активен" style={styles.checkbox} defaultChecked={this.props.user.enabled}/>
                 </Col>
@@ -81,12 +100,6 @@ class DialogueUserModify extends React.Component {
                             ))}
                         </TableBody>
                     </Table>
-                </Col>
-            </Row>
-            <Row>
-                <Col>
-                    <RaisedButton type="button" label="Сохранить" primary style={styles.spaced}/>
-                    <RaisedButton type="button" label="Отмена" onClick={this.onCancelClick}/>
                 </Col>
             </Row>
         </Grid>

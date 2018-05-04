@@ -21,6 +21,20 @@ const styles = {
     },
     ulFullWidth:{
         width: '100%'
+    },
+    dialogRoot: {
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        paddingTop: 0
+    },
+    dialogContent: {
+        position: "relative",
+        width: "80vw",
+        transform: "",
+    },
+    dialogBody: {
+        paddingBottom: 0
     }
 };
 

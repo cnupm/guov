@@ -4,6 +4,7 @@ import TextField from 'material-ui/TextField';
 import RaisedButton from 'material-ui/RaisedButton';
 import Checkbox from 'material-ui/Checkbox';
 import Dialog from 'material-ui/Dialog';
+import {Card, CardActions, CardHeader, CardText} from 'material-ui/Card';
 import { Table, TableBody, TableRow, TableRowColumn} from 'material-ui/Table';
 import Subheader from 'material-ui/Subheader';
 import { Grid, Row, Col } from 'react-flexbox-grid';
@@ -96,8 +97,12 @@ class DialogBoardModify extends React.Component {
             open={true}
             style={{maxHeight: 'none'}}
             autoScrollBodyContent={true}
-            onRequestClose={this.props.onRequestClose}>
-        <Grid fluid>
+            onRequestClose={this.props.onRequestClose}
+            contentStyle={ styles.dialogContent }
+            bodyStyle={ styles.dialogBody }
+            style={ styles.dialogRoot }
+            repositionOnUpdate={ false }>
+        <Grid fluid style={{paddingTop: '0px'}}>
             <Row>
                 <Col>
                     <Subheader>Основные параметры:</Subheader>
@@ -105,8 +110,15 @@ class DialogBoardModify extends React.Component {
                     <Subheader>Статус архивирования:</Subheader>
                     <Checkbox label="Доска в архиве" style={styles.checkbox} defaultChecked={this.props.board.archived}/>
                 </Col>
+            </Row>
+            <Row>
                 <Col>
-                    <Subheader>Колонки:</Subheader>
+                <Card>
+                    <CardHeader
+                        subtitle="Колонки"
+                        actAsExpander={true}
+                        showExpandableButton={true}/>
+                    <CardText expandable={true}>
                     <Table
                         height={200}
                         selectable={true}
@@ -137,6 +149,8 @@ class DialogBoardModify extends React.Component {
 
                     <RaisedButton type="button" label="удалить"
                         style={styles.spaced} onClick={this.onRemoveLaneClick}/>
+                    </CardText>
+                    </Card>
                 </Col>
             </Row>
             <Row>

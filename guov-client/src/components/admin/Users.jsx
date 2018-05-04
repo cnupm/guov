@@ -55,7 +55,8 @@ class Users extends React.Component {
         this.setState({selectedUser: user});
     }
 
-    userModifyDialogClosed = (source) => {
+    userModifyDialogClosed = (flag) => {
+        console.log(`pass: ${document.getElementById('userPassword').value}, cancelled: ${flag}`);
         this.setState({selectedUser: undefined});
     }
 

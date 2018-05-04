@@ -3,6 +3,7 @@ import {CardsBoard, sock} from './components/CardsBoard'
 import LoginForm from './components/LoginForm';
 import SignupForm from './components/SignupForm';
 import {AdminForm} from './components/AdminForm';
+import BoardsList from './components/BoardsList';
 import Subheader from 'material-ui/Subheader';
 import CircularProgress from 'material-ui/CircularProgress';
 import AppBar from 'material-ui/AppBar';
@@ -36,7 +37,7 @@ class App extends Component {
     this.state = {
       //для формы логина
       email: this.props.cookies.get('defaultEmail'),
-      password: '', //XXX: for development
+      password: 'test', //XXX: for development
       saveLogin: this.props.cookies.get('saveLogin'),
       //всплывающая подсказка внизу экрана
       open: false,
@@ -67,7 +68,7 @@ class App extends Component {
           } else {
             this.props.cookies.set('defaultEmail', this.state.saveLogin ? this.state.email : '', {path: '/'});
             this.props.cookies.set('saveLogin', this.state.saveLogin, {path: '/'});
-            this.setState({authorized: true, board: params.board, currentPage: 'board'});
+            this.setState({authorized: true, board: params.board, currentPage: 'boards_list'});
           }
         });
     }
@@ -196,6 +197,16 @@ class App extends Component {
     </div>;
   }
 
+  onBoardSelected = (board) => {
+    console.log('selected board: ', board);
+    this.setState({board: board[0], currentPage: 'board'});
+    console.log(this.state);
+  }
+
+  BoardsListPage(){
+    return <BoardsList sock={sock} onBoardSelected={this.onBoardSelected}/>
+  }
+
   AdminPage(){
     return <AdminForm sock={sock}/>;
   }
@@ -205,6 +216,7 @@ class App extends Component {
     switch(this.state.currentPage){
       case 'login': return this.LoginBlock();
       case 'signup': return this.SignupBlock();
+      case 'boards_list': return this.BoardsListPage();
       case 'board': return this.BoardPage();
       case 'admin': return this.AdminPage();
       default: return this.BoardPage();

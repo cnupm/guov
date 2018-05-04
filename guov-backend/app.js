@@ -8,6 +8,7 @@ const waterfall= require('async/waterfall');
 /**
  * DB models
  */
+const mongoose = require('mongoose');
 const User = require('./models/user');
 const BoardMgr = require('./models/board');
 io.listen(8000);
@@ -92,21 +93,14 @@ io.on('connection', (client) => {
       console.log('usr: ' + usr);
 
       if(usr != null && bcrypt.compareSync(password, usr.Password)){
-        loadBoard().then((data) => {
-          console.log('board: ' + JSON.stringify(data));
-          client.emit('login-reply', {success: true, board: {lanes: data}});
-        });
+        client.emit('login-reply', {success: true});
+        // loadBoard().then((data) => {
+        //   console.log('board: ' + JSON.stringify(data));
+        //   client.emit('login-reply', {success: true, board: {lanes: data}});
+        // });
       } else {
         client.emit('login-reply', {success: false});
       }
-
-      // if(usr === null){
-      //   var hash = bcrypt.hashSync(password, 10);
-      //   User.create({Email: email, Password: hash, Enabled: true}, (err, mdl) => {
-      //     console.log('- err: ' + err);
-      //     console.log('- mdl: ' + mdl);
-      //   });
-      // }
     });
   });
 
@@ -148,14 +142,15 @@ io.on('connection', (client) => {
   });
 
   client.on('loadBoards', () => {
-    BoardMgr.Board.aggregate([{
-      $lookup: {
-        from: 'lanes',
-        localField: '_id',
-        foreignField: 'boardId',
-        as: 'lanes'
-      }
-    }]).then((res) => {
+    // BoardMgr.Board.aggregate([{
+    //   $lookup: {
+    //     from: 'lanes',
+    //     localField: '_id',
+    //     foreignField: 'boardId',
+    //     as: 'lanes'
+    //   }
+    // }])
+    BoardMgr.Board.find({}).then((res) => {
       let reply = [];
       res.forEach((board) => {
         reply.push(board);
@@ -165,9 +160,70 @@ io.on('connection', (client) => {
       client.emit('loadBoardsReply', {boards: reply});
     })
   });
+
+  client.on('loadBoard', (id) => {
+    loadBoard(id).then((res) => {
+      client.emit('loadBoardReply', {board: res});
+    }).catch((err) => {
+      console.error('loadBoard failed: ', err);
+    });
+  });
 });
 
-function loadBoard(){
+/**
+ * Загрузка списка доступных досок
+ */
+function loadBoard(id){
+  console.log(`load board: ${id}`);
+  return new Promise((ok, fail) => {
+    BoardMgr.Board.aggregate([
+      {
+        $match: {
+          _id: mongoose.Types.ObjectId(id)
+        },
+      },
+      {
+        $lookup: {
+          from: 'lanes',
+          localField: '_id',
+          foreignField: 'boardId',
+          as: 'lanes',         
+        }
+      },
+      {
+        $unwind: {
+          path: "$lanes",
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      {
+        $lookup: {
+          from: 'cards',
+          localField: 'lanes._id',
+          foreignField: 'laneId',
+          as: 'cards'
+      }},
+      {
+          $group: {
+            _id: "$_id",
+            title: {$first: "$title"},
+            lanes: {
+              $push: {
+                id: "$lanes._id",
+                title: "$lanes.title",
+                cards: "$cards"
+            }}
+      }}
+      
+    ]).then((res) => {
+      //res.forEach((lane) => {lane.id = '' + lane._id;});
+      console.log('collected:', JSON.stringify(res));
+      ok(res);
+    }).catch((err) => {fail(err);});
+  });
+}
+
+function loadBoardCards(){
   return new Promise((ok, fail) => {
     BoardMgr.Lane.aggregate([{
       $lookup: {

@@ -60,7 +60,7 @@ class Boards extends React.Component {
     }
 
     render(){
-        return <div>
+        return <div style={{paddingTop: '0px'}}>
             <Subheader>Существующие доски:</Subheader>
             <Table
                 height={200}
@@ -89,7 +89,7 @@ class Boards extends React.Component {
             <RaisedButton type="button" label="Создать" primary onClick={this.onCreateBoard} />
 
             {(this.state.selectedBoard !== undefined) ?
-                <DialogBoardModify onRequestClose={this.boardModifyDialogClosed} sock={this.props.sock}
+                <DialogBoardModify style={{paddingTop: '0px'}} onRequestClose={this.boardModifyDialogClosed} sock={this.props.sock}
                     board={this.state.selectedBoard}/> : ''
             }
         </div>;
