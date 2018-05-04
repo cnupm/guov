@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import {CardsBoard, sock} from './components/CardsBoard'
 import LoginForm from './components/LoginForm';
+import SignupForm from './components/SignupForm';
 import {AdminForm} from './components/AdminForm';
 import Subheader from 'material-ui/Subheader';
 import CircularProgress from 'material-ui/CircularProgress';
@@ -35,13 +36,13 @@ class App extends Component {
     this.state = {
       //для формы логина
       email: this.props.cookies.get('defaultEmail'),
-      password: 'admin', //XXX: for development
+      password: '', //XXX: for development
       saveLogin: this.props.cookies.get('saveLogin'),
       //всплывающая подсказка внизу экрана
       open: false,
       message: '',
       //всё остальное - стартовая страница, флаг авторизации, связи с сервером, куки и карточки
-      currentPage: 'board',
+      currentPage: 'login',
       authorized: false,
       connected: false,
       cookies: this.props.cookies.getAll(),
@@ -54,6 +55,8 @@ class App extends Component {
 
   //вызывается из компонента с формой логина
   onLoginSubmit(event){
+    console.log('evt:', event.currentTarget);
+
     if(sock.connected){
         this.setState({ open: false});
         sock.emit('login', this.state.email, this.state.password);
@@ -64,7 +67,7 @@ class App extends Component {
           } else {
             this.props.cookies.set('defaultEmail', this.state.saveLogin ? this.state.email : '', {path: '/'});
             this.props.cookies.set('saveLogin', this.state.saveLogin, {path: '/'});
-            this.setState({authorized: true, board: params.board});
+            this.setState({authorized: true, board: params.board, currentPage: 'board'});
           }
         });
     }
@@ -79,6 +82,49 @@ class App extends Component {
     } else {
       this.setState(() => ({[name]: value }));
     }
+  }
+
+  /**
+   * Gtht[jl yf ajhve htubcnhfwbb]
+   */
+  onRegisterRequest = (evt) => {
+    let val = document.getElementById('email').value;
+    this.setState({currentPage: 'signup'});
+  }
+
+  /**
+   * Передача/обработка запроса на регистрацию
+   */
+  onRegisterAction = (evt) => {
+    let email = document.getElementById('email').value;
+    let pass0 = document.getElementById('password').value;
+    let pass1 = document.getElementById('password_confirm').value;
+    
+    if(email.length < 1){
+      this.showMessage('Не указан e-mail.');
+    } else if(pass0.length < 1 || pass0 !== pass1){
+      this.showMessage('Пароли не могут быть пустыми и должны совпадать.');
+    } else {
+      sock.on('signup-reply', (reply) => {  
+        if(reply.success){
+          this.setCookie('defaultEmail', '');
+          this.setCookie('saveLogin', false);
+          this.setState({email: '', saveLogin: false, currentPage: 'login'});
+        } else {
+          this.showMessage(reply.message);
+        }
+      });
+
+      sock.emit('signup', email, pass0);
+    }
+  }
+
+  showMessage = (msg) => {
+    this.setState({open: true, message: msg});
+  } 
+
+  setCookie = (key, value) => {
+    this.props.cookies.set(key, value, {path: '/'});
   }
 
   componentDidMount(){
@@ -110,12 +156,26 @@ class App extends Component {
             </center>;
   }
 
+  /**
+   * Форма авторизации
+   */
   LoginBlock(){
     return <center>
-        <LoginForm onSubmit={this.onLoginSubmit} appState={this.state} onChange={this.onLoginChange}/>
+        <LoginForm onSubmit={this.onLoginSubmit} appState={this.state}
+          onChange={this.onLoginChange} onRegister={this.onRegisterRequest}/>
       </center>;
   }
 
+  /**
+   * Форма для регистрации нового пользователя
+   */
+  SignupBlock(){
+    return <center><SignupForm onRegister={this.onRegisterAction}/></center>;
+  }
+
+  /**
+   * Отображение выбранной доски
+   */
   BoardPage(){
     return <div>
       <AppBar
@@ -143,6 +203,8 @@ class App extends Component {
   RenderCurrentPage(){
     console.warn('current page: ',this.state.currentPage);
     switch(this.state.currentPage){
+      case 'login': return this.LoginBlock();
+      case 'signup': return this.SignupBlock();
       case 'board': return this.BoardPage();
       case 'admin': return this.AdminPage();
       default: return this.BoardPage();
@@ -154,9 +216,9 @@ class App extends Component {
       <MuiThemeProvider muiTheme={muiTheme}>
       <div>
         {
-          !this.state.authorized ?
-            (this.state.connected? this.LoginBlock() : this.ConnectionLoader()) : this.RenderCurrentPage()
-        
+          //!this.state.authorized ?
+          //  (this.state.connected? this.LoginBlock() : this.ConnectionLoader()) : this.RenderCurrentPage()
+          this.RenderCurrentPage()
         }
         <Snackbar open={this.state.open} message={this.state.message}
         autoHideDuration={4000} onRequestClose={this.snackRequestClose}/>

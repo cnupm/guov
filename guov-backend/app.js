@@ -110,6 +110,26 @@ io.on('connection', (client) => {
     });
   });
 
+  client.on('signup', (email, password) => {
+    console.log(`signup request form ${email}`);
+
+    User.findOne({'Email': email}, (err, usr) => {
+      console.log('err: ' + err);
+      console.log('usr: ' + usr);
+
+      if(usr != null){
+        client.emit('signup-reply', {success: false, message: 'Пользователь с таким адресом уже зарегистрирован.'});
+      } else {
+        var hash = bcrypt.hashSync(password, 10);
+        User.create({Email: email, Password: hash, Enabled: true}, (err, mdl) => {
+          console.log('- err: ' + err);
+          console.log('- mdl: ' + mdl);
+          client.emit('signup-reply', {success: err == null});
+        });
+      }
+    });
+  });
+
   //TODO: инициализировать только после авторизации и для привилегированных пользователей
   client.on('adminUsersFind', (email) => {
     console.log('adminUsersFind -> ', email);

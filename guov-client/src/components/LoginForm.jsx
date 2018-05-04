@@ -10,21 +10,23 @@ const styles = {
     },
     checkbox: {
         marginBottom: 16,
-        maxWidth: 140
+        maxWidth: 200
     },
+    buttons: {
+        margin: 10
+    }
 };
 
 const LoginForm = ({onSubmit,
     onChange,
-    errors,
-    successMessage,
-    appState}) => (
+    appState,
+    onRegister}) => (
         <center style={styles.block}>
-        <Card className="container">
+        <Card className="container" style={styles.buttons}>
             <form action="/api/auth"  onSubmit={onSubmit}>
                 <div className="field-line">
                     <TextField
-                        floatingLabelText="Email"
+                        floatingLabelText="E-mail"
                         name="email"
                         onChange={onChange}
                         defaultValue={appState.cookies.defaultEmail}
@@ -34,7 +36,7 @@ const LoginForm = ({onSubmit,
 
                 <div className="field-line">
                     <TextField
-                    floatingLabelText="Password"
+                    floatingLabelText="Пароль"
                     type="password"
                     name="password"
                     onChange={onChange}
@@ -42,9 +44,10 @@ const LoginForm = ({onSubmit,
                     />
                 </div>
             
-                <Checkbox label="Save email" style={styles.checkbox} onCheck={onChange}
+                <Checkbox label="Запомнить e-mail" style={styles.checkbox} onCheck={onChange}
                     defaultChecked={appState.cookies.saveLogin === 'true'}/>
-                <RaisedButton type="submit" label="Log in" primary/>
+                <RaisedButton type="submit" label="Войти" primary/>
+                <RaisedButton label="Регистрация" style={styles.buttons} onClick={onRegister}/>
             </form>
         </Card>
         </center>
