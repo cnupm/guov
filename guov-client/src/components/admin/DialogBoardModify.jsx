@@ -12,10 +12,9 @@ class DialogBoardModify extends React.Component {
     constructor(props) {
         super(props);
         this.setSockHandlers();
-
         this.state = {
             open: true,
-            selectedLane: undefined,
+            selectedLane: {},
             lanes: (props.board.lanes ? props.board.lanes : [])
         };
     }
@@ -53,9 +52,41 @@ class DialogBoardModify extends React.Component {
         laneProp.value = '';
     }
 
+    onRemoveLaneClick = () => {
+        
+        if(!this.tableBody.state.selectedRows || this.tableBody.state.selectedRows.length < 1){
+            return;
+        }
+
+        let row = this.tableBody.state.selectedRows[0];
+        console.log('remove lane at row:', row);
+        let lanes = this.state.lanes;
+        lanes.splice(row, 1);
+        this.setState({lanes: lanes});
+        this.props.sock.emit('adminRemoveLane', {laneId: row._id, boardId: this.props.board._id});
+    }
+
+    onUpdateLaneClick = () => {
+        
+        let laneProp = document.getElementById('laneName');
+        if(!this.tableBody.state.selectedRows
+            || this.tableBody.state.selectedRows.length < 1
+            || laneProp.value.length < 1){
+            return;
+        }
+
+        let row = this.tableBody.state.selectedRows[0];
+        console.log('update lane at row:', row);
+        let lanes = this.state.lanes;
+        lanes[row].title = laneProp.value;
+        this.setState({lanes: lanes});
+        this.props.sock.emit('adminUpdateLane', {laneId: row._id, title: laneProp.value, boardId: this.props.board._id});
+        laneProp.value = '';
+    }
+
     onLaneSelected = (row) => {
-        // console.log('selected lane:', this.state.lanes[row]);
-        //this.setState({selectedLane: this.state.lanes[row]._id});
+        console.log('selected lane: ', this.state.lanes[row]);
+        this.tableBody.setState({ selectedRows: row });
     };
 
     render(){
@@ -82,6 +113,7 @@ class DialogBoardModify extends React.Component {
                         multiSelectable={false}
                         onRowSelection={this.onLaneSelected}>
                         <TableBody
+                            ref={(tableBody) => {this.tableBody = tableBody; }}
                             displayRowCheckbox={false}
                             deselectOnClickaway={false}
                             showRowHover={false}
@@ -95,9 +127,16 @@ class DialogBoardModify extends React.Component {
                         </TableBody>
                     </Table>
 
-                    <TextField floatingLabelText="Название колонки" style={styles.spaced}/>
+                    <TextField floatingLabelText="Название колонки" style={styles.spaced} id="laneName"/>
+
                     <RaisedButton type="button" label="добавить" primary
                         style={styles.spaced} onClick={this.onAddLaneClick}/>
+
+                    <RaisedButton type="button" label="обновить"
+                        style={styles.spaced} onClick={this.onUpdateLaneClick}/>
+
+                    <RaisedButton type="button" label="удалить"
+                        style={styles.spaced} onClick={this.onRemoveLaneClick}/>
                 </Col>
             </Row>
             <Row>
