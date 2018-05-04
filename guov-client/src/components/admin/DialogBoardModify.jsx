@@ -1,10 +1,11 @@
 import React from 'react';
 import {styles} from '../AdminForm';
 import TextField from 'material-ui/TextField';
+import FlatButton from 'material-ui/FlatButton';
 import RaisedButton from 'material-ui/RaisedButton';
 import Checkbox from 'material-ui/Checkbox';
 import Dialog from 'material-ui/Dialog';
-import {Card, CardActions, CardHeader, CardText} from 'material-ui/Card';
+import {Card, CardHeader, CardText} from 'material-ui/Card';
 import { Table, TableBody, TableRow, TableRowColumn} from 'material-ui/Table';
 import Subheader from 'material-ui/Subheader';
 import { Grid, Row, Col } from 'react-flexbox-grid';
@@ -90,12 +91,27 @@ class DialogBoardModify extends React.Component {
         this.tableBody.setState({ selectedRows: row });
     };
 
+
     render(){
+        const actions = [
+            <FlatButton
+              label="Сохранить"
+              primary={true}
+              onClick={this.onSaveClick}/>,
+            <FlatButton
+              label="Удалить"
+              secondary={true}
+              onClick={this.onRemoveClick}/>,
+            <FlatButton
+              label="Отмена"
+              onClick={this.onCancelClick}/>
+        ];
+
         return <Dialog
             title={"Редактирование доски: " + this.props.board.title}
             modal={false}
             open={true}
-            style={{maxHeight: 'none'}}
+            actions={actions}
             autoScrollBodyContent={true}
             onRequestClose={this.props.onRequestClose}
             contentStyle={ styles.dialogContent }
@@ -113,7 +129,7 @@ class DialogBoardModify extends React.Component {
             </Row>
             <Row>
                 <Col>
-                <Card>
+                <Card style={{marginBottom: '4px'}}>
                     <CardHeader
                         subtitle="Колонки"
                         actAsExpander={true}
@@ -151,14 +167,6 @@ class DialogBoardModify extends React.Component {
                         style={styles.spaced} onClick={this.onRemoveLaneClick}/>
                     </CardText>
                     </Card>
-                </Col>
-            </Row>
-            <Row>
-                <Col>
-                    <br/>
-                    <RaisedButton type="button" label="Сохранить" primary style={styles.spaced}/>
-                    <RaisedButton type="button" label="Удалить" style={styles.spaced} onClick={this.onRemoveClick}/>
-                    <RaisedButton type="button" label="Отмена" onClick={this.onCancelClick}/>
                 </Col>
             </Row>
         </Grid>

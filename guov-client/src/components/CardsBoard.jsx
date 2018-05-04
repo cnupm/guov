@@ -1,10 +1,9 @@
 import React from 'react';
 import Board from 'react-trello';
-import { Card } from 'material-ui/Card';
 import openSocket from 'socket.io-client';
 
 let eventBus = undefined;
-let sock = openSocket("http://cnupm.ml:8000");
+let sock = openSocket("http://109.173.112.19:8000");
 
 /**
  * Подвязка к сокету обработчикос глобальных сообщений - карточка добавлена/перемещена/...
@@ -68,12 +67,11 @@ const setEventBus = (handle) => {
 }
 
 const CardsBoard = ({cards}) => ( 
-  <Card>
     <Board data={cards} draggable={true} collapsibleLanes={false}
+      style={{height: '90vh'}}
       editable={true} handleDragStart={onCardDragStart}
       handleDragEnd={onCardDragEnd} onCardAdd={onCardAdded}
       eventBusHandle={setEventBus} onCardDelete={onCardDelete}/>
-  </Card>
 );
 
 

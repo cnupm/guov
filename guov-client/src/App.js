@@ -22,6 +22,8 @@ const muiTheme = getMuiTheme({
   appBar: {
     color: '#195273',
     titleFontWeight: 300,
+    paddingBottom: 0,
+    paddingTop: 0,
     height: 30
   }
 });
@@ -179,7 +181,13 @@ class App extends Component {
    */
   BoardPage(){
     return <div>
-      <AppBar
+      <CardsBoard cards={this.state.board} />
+    </div>;
+  }
+
+  RenderAppBar() {
+    //return '';
+    return <AppBar
         title={<small>{this.state.email}</small>}
         iconElementLeft={
           <IconMenu
@@ -193,8 +201,6 @@ class App extends Component {
           </IconMenu>
         }
       />
-      <CardsBoard cards={this.state.board} />
-    </div>;
   }
 
   onBoardSelected = (board) => {
@@ -226,11 +232,13 @@ class App extends Component {
   render() {
     return (
       <MuiThemeProvider muiTheme={muiTheme}>
-      <div>
+      <div style={{maxHeight: '60%'}}>
+        { (this.state.currentPage !== 'login'
+           && this.state.currentPage !== 'signup') ? this.RenderAppBar() : ''}
         {
           //!this.state.authorized ?
           //  (this.state.connected? this.LoginBlock() : this.ConnectionLoader()) : this.RenderCurrentPage()
-          this.RenderCurrentPage()
+          this.state.connected ? this.RenderCurrentPage() : this.ConnectionLoader()
         }
         <Snackbar open={this.state.open} message={this.state.message}
         autoHideDuration={4000} onRequestClose={this.snackRequestClose}/>

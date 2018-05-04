@@ -55,7 +55,6 @@ class DialogueUserModify extends React.Component {
             <FlatButton
               label="Отмена"
               primary={false}
-              keyboardFocused={true}
               onClick={this.onCancelClick}/>
         ];
         return <Dialog

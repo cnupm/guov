@@ -142,15 +142,14 @@ io.on('connection', (client) => {
   });
 
   client.on('loadBoards', () => {
-    // BoardMgr.Board.aggregate([{
-    //   $lookup: {
-    //     from: 'lanes',
-    //     localField: '_id',
-    //     foreignField: 'boardId',
-    //     as: 'lanes'
-    //   }
-    // }])
-    BoardMgr.Board.find({}).then((res) => {
+    BoardMgr.Board.aggregate([{
+      $lookup: {
+        from: 'lanes',
+        localField: '_id',
+        foreignField: 'boardId',
+        as: 'lanes'
+      }
+    }]).then((res) => {
       let reply = [];
       res.forEach((board) => {
         reply.push(board);
@@ -216,7 +215,8 @@ function loadBoard(id){
       }}
       
     ]).then((res) => {
-      //res.forEach((lane) => {lane.id = '' + lane._id;});
+      //чтоб валидатор не матерился на клиенте - явный каст айдишника к строке
+      res[0].lanes.forEach((lane) => {lane.id = '' + lane.id;});
       console.log('collected:', JSON.stringify(res));
       ok(res);
     }).catch((err) => {fail(err);});

@@ -9,7 +9,7 @@ const styles = {
         maxWidth: 230
     },
     spaced:{
-        margin: '15px',
+        margin: '10px',
         marginTop: '2px'
     },
     flexPad: {
