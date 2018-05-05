@@ -26,17 +26,20 @@ class BoardsList extends React.Component {
         };
     }
 
+    /**
+     * Обработка нажатия на наименование доски в общем списке
+     */
     onTileTouch = (id) => {
-        console.log(`tile touch: ${id} -- ${this.state.boards[id]._id}`);
-        
-        this.props.sock.on('loadBoardReply', (reply) => {
-            //this.setState({boards: reply.boards});
+        this.props.sock.on('loadBoardByIdReply', (reply) => {
             this.props.onBoardSelected(reply.board);
         });
 
-        this.props.sock.emit('loadBoard', this.state.boards[id]._id);
+        this.props.sock.emit('loadBoardById', this.state.boards[id]._id);
     };
 
+    /**
+     * Загрузка списка всех доступных досок перед монтированием компонента
+     */
     componentWillMount(){
         this.props.sock.on('loadBoardsReply', (reply) => {
             this.setState({boards: reply.boards});

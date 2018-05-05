@@ -11,6 +11,7 @@ const waterfall= require('async/waterfall');
 const mongoose = require('mongoose');
 const User = require('./models/user');
 const BoardMgr = require('./models/board');
+const board_ctl = require('./controllers/board_controller');
 io.listen(8000);
 
 /**
@@ -57,32 +58,27 @@ io.on('connection', (client) => {
   });
 
   //Создание доски
-  client.on('adminBoardCreateBoard', (boardName) => {
-    console.log('create board: ', boardName);
-
-    BoardMgr.Board.create({title: boardName}, (err, board) => {
-      client.emit('adminBoardCreateBoardReply', {success: err == null, data: board});
-    });
+  client.on('adminBoardCreateBoard', (title) => {
+    board_ctl.CreateBoard(client, title);
   });
 
   //Удаление доски
   client.on('adminBoardRemoveBoard', (boardId) => {
-    console.log('REMOVE board: ', boardId);
-
-    BoardMgr.Board.deleteOne({_id: boardId}, (err) => {
-      client.emit('adminBoardRemoveBoardReply', {success: err == null});
-    });
+    board_ctl.RemoveBoard(client, boardId);
   });
 
   //Добавление колонки для карточек
-  client.on('adminAddLane', (req) => {
-    console.log('Add lane: ', req);
-
-    BoardMgr.Lane.create({boardId: req.boardId, title: req.title}, (err, lane) => {
-      client.emit('adminAddLaneReply', {success: err == null, lane: lane});
-    });
+  client.on('addLane', (req) => {
+    board_ctl.CreateLane(client, req);
   });
 
+  client.on('updateLane', (req) => {
+    board_ctl.UpdateLane(client, req);
+  });
+
+  client.on('removeLane', (req) => {
+    board_ctl.RemoveLane(client, req);
+  });
 
   //аутентификация
   client.on('login', (email, password) => {
@@ -160,11 +156,11 @@ io.on('connection', (client) => {
     })
   });
 
-  client.on('loadBoard', (id) => {
+  client.on('loadBoardById', (id) => {
     loadBoard(id).then((res) => {
-      client.emit('loadBoardReply', {board: res});
+      client.emit('loadBoardByIdReply', {board: res});
     }).catch((err) => {
-      console.error('loadBoard failed: ', err);
+      console.error('loadBoardById failed: ', err);
     });
   });
 });

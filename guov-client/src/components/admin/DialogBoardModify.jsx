@@ -22,7 +22,16 @@ class DialogBoardModify extends React.Component {
     }
 
     setSockHandlers = () => {
-        this.props.sock.on('adminAddLaneReply', (reply) => {
+        this.props.sock.on('addLaneReply', (reply) => {
+            console.log('add reply:', reply);
+            if(reply.success){
+                let lanes = this.state.lanes;
+                lanes.push(reply.lane);
+                this.setState({lanes: lanes});
+            }
+        });
+
+        this.props.sock.on('addLaneReply', (reply) => {
             console.log('add reply:', reply);
             if(reply.success){
                 let lanes = this.state.lanes;
@@ -50,12 +59,11 @@ class DialogBoardModify extends React.Component {
     onAddLaneClick = () => {
         let laneProp = document.getElementById('laneName');
         console.log('adding lane: ', laneProp.value + "/" + this.props.board._id);
-        this.props.sock.emit('adminAddLane', {title: laneProp.value, boardId: this.props.board._id});
+        this.props.sock.emit('addLane', {title: laneProp.value, boardId: this.props.board._id});
         laneProp.value = '';
     }
 
     onRemoveLaneClick = () => {
-        
         if(!this.tableBody.state.selectedRows || this.tableBody.state.selectedRows.length < 1){
             return;
         }
@@ -63,13 +71,13 @@ class DialogBoardModify extends React.Component {
         let row = this.tableBody.state.selectedRows[0];
         console.log('remove lane at row:', row);
         let lanes = this.state.lanes;
+        let laneId = lanes[row]._id;
         lanes.splice(row, 1);
         this.setState({lanes: lanes});
-        this.props.sock.emit('adminRemoveLane', {laneId: row._id, boardId: this.props.board._id});
+        this.props.sock.emit('removeLane', laneId);
     }
 
     onUpdateLaneClick = () => {
-        
         let laneProp = document.getElementById('laneName');
         if(!this.tableBody.state.selectedRows
             || this.tableBody.state.selectedRows.length < 1
@@ -82,7 +90,7 @@ class DialogBoardModify extends React.Component {
         let lanes = this.state.lanes;
         lanes[row].title = laneProp.value;
         this.setState({lanes: lanes});
-        this.props.sock.emit('adminUpdateLane', {laneId: row._id, title: laneProp.value, boardId: this.props.board._id});
+        this.props.sock.emit('updateLane', {id: lanes[row]._id, title: laneProp.value, boardId: this.props.board._id});
         laneProp.value = '';
     }
 
