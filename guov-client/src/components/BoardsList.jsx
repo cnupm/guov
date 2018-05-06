@@ -49,7 +49,7 @@ class BoardsList extends React.Component {
     }
 
     render(){
-        return <div style={styles.root}>
+        return <div style={styles.root} id='boardsList'>
         <GridList onClick={ (e) => {this.onTileTouch}}
         cellHeight={80}
         style={styles.gridList}

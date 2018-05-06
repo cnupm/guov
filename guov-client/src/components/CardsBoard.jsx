@@ -112,7 +112,7 @@ class CardsBoard extends React.Component{
     this.setState({cardToEdit: undefined});
   }
 
-  onCreateLaneClose = (reply = null) => {
+  onCreateLaneClose = (flag, reply = null) => {
     if(reply !== null){
       let board = this.props.cards;
       reply.lane.cards = [];

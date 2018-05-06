@@ -60,7 +60,7 @@ class DialogEditCard extends React.Component{
                         <TextField floatingLabelText="Описание"
                             ref={(r) => {this.refDescription = r;}}
                             defaultValue={this.props.data.card.description}
-                            style={styles.spaced}/>
+                            style={styles.spaced} multiLine={true} rows={2}/>
 
                     </Col>
                 </Row>

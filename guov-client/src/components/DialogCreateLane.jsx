@@ -10,14 +10,14 @@ class DialogCreateLane extends React.Component{
     onSaveClick = () => {
         this.props.sock.on('addLaneReply', (reply) => {
             console.log('card update reply: ', reply);
-            this.props.onRequestClose(reply);
+            this.props.onRequestClose(true, reply);
         });
 
         this.props.sock.emit('addLane', {boardId: this.props.boardId, title: this.refTilte.getValue()});
     }
 
     onCancelClick = () => {
-        this.props.onRequestClose();
+        this.props.onRequestClose(true);
     }
 
     render(){
@@ -32,7 +32,7 @@ class DialogCreateLane extends React.Component{
         ];
 
         return <Dialog
-            title={"Редактирование карточки"}
+            title={"Создание колонки"}
             modal={false}
             open={true}
             actions={actions}
