@@ -1,3 +1,4 @@
+const {mongoose} = require('../dal');
 const dal = require('../models/board');
 
 
@@ -27,7 +28,7 @@ UpdateLane = (client, req) => {
         console.log('err:', err);
         console.log('res:', res);
         if(!err){
-            client.broadcast.emit('updatedLaneReply', {id: res._id, title: res.title});
+            client.emit('updatedLaneReply', {id: req.id, title: res.title});
         }
     });
 };
@@ -39,4 +40,16 @@ RemoveLane = (client, id) => {
     });
 };
 
-module.exports = {CreateBoard, RemoveBoard, CreateLane, UpdateLane, RemoveLane};
+UpdateCard = (client, req) => {
+    console.log(`update card: ${JSON.stringify(req)}`);
+    dal.Card.update({_id: mongoose.Types.ObjectId(req.id)},
+        {title: req.title, label: req.label, description: req.description},
+        (err, res) => {
+            console.log('err:', err);
+            console.log('res:', res);
+            client.emit('updateCardReply', {id: req.id, title: req.title, label: req.label,
+                description: req.description, laneId: req.laneId, success: err == null});
+    });
+};
+
+module.exports = {CreateBoard, RemoveBoard, CreateLane, UpdateLane, RemoveLane, UpdateCard};

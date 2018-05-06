@@ -1,5 +1,6 @@
 import React from 'react';
 import Board from 'react-trello';
+import DialogEditCard from './DialogEditCard'
 import openSocket from 'socket.io-client';
 
 let eventBus = undefined;
@@ -8,7 +9,7 @@ let sock = openSocket("http://109.173.112.19:8000");
 /**
  * Подвязка к сокету обработчикос глобальных сообщений - карточка добавлена/перемещена/...
  */
-function setEventHandlers(){
+/*function setEventHandlers(){
   sock.on('cardMoved', (params) => {
     //падало, если в колонке этой карты нету (рассинхрон).
     //Надо бы добавить проверку на наличие самой карточки, да и вообще
@@ -38,7 +39,7 @@ function setEventHandlers(){
   sock.on('cardAdded', (params) => {
     eventBus.publish({type: 'ADD_CARD', laneId: params.laneId, card: params.card});
   });
-}
+}*/
 
 function onCardDragStart(cardId, laneId){
   console.log('card drag: ' + cardId);
@@ -56,23 +57,72 @@ function onCardDelete(cardId, laneId){
   sock.emit('cardDeleted', cardId, laneId);
 }
 
-/**
- * Подвязка шины для проброса сообщений в контейнер, где хранятся карточки и доски.
- * Заодно открытие сокета для синхронизации действия с карточками между пользователями.
- * @param {*} handle 
- */
-const setEventBus = (handle) => {
-  setEventHandlers();
-  eventBus = handle
-}
+class CardsBoard extends React.Component{
 
-const CardsBoard = ({cards}) => ( 
-    <Board data={cards} draggable={true} collapsibleLanes={false}
-      style={{height: '90vh'}}
+  constructor(props){
+    super(props);
+    this.state = {
+      eventBus: undefined,
+      cardToEdit: undefined
+    }
+  }
+
+  setEventBus = (handle) => {
+    this.setState({eventBus: handle});
+  }
+
+  updateLanes = (lanes) => {
+    console.log('pub!', lanes);
+    this.state.eventBus.publish({type: 'REFRESH_BOARD', data: lanes});
+  }
+
+  onCardClick = (cardId, meta, laneId) => {
+    let lane = this.props.cards.lanes.filter((e) => {return e.id === laneId});
+    if(lane.length === 1){
+      let card = lane[0].cards.filter((e) =>  {return e.id === cardId;});
+      console.log(`card clicked: ${cardId}, ${JSON.stringify(card)}, ${laneId}`);
+      this.setState({cardToEdit: {card: card[0], laneId: lane[0].id}});
+    }
+  }
+
+  onEditCardClose = (flag, reply = null) => {
+    if(reply && reply.success){
+      let data = this.props.cards;
+      data.lanes = data.lanes.map((l) => {
+        let newLane = l;
+        if(newLane.id === reply.laneId){
+          newLane.cards = newLane.cards.map((c) => {
+            let newCard = c;
+            if(c._id === reply.id){
+              c.title = reply.title;
+              c.label = reply.label;
+              c.description = reply.description;
+            }
+            return c;
+          });
+        }
+        return newLane;
+      });
+
+      this.state.eventBus.publish({type: 'REFRESH_BOARD', data: data});
+      this.setState({cardToEdit: undefined});
+    }
+  }
+
+  render(){
+
+    if(this.state.cardToEdit)
+      return <DialogEditCard data={this.state.cardToEdit}
+        sock={sock} onRequestClose={this.onEditCardClose}/>
+
+    return <Board data={this.props.cards} draggable={true}
+      collapsibleLanes={false} style={{height: '94vh'}} ref={(obj) => {this.boardRef = obj;}}
       editable={true} handleDragStart={onCardDragStart}
       handleDragEnd={onCardDragEnd} onCardAdd={onCardAdded}
-      eventBusHandle={setEventBus} onCardDelete={onCardDelete}/>
-);
+      eventBusHandle={this.setEventBus} onCardDelete={onCardDelete}
+      onCardClick={this.onCardClick}/>;
+  }
+}
 
 
 export {CardsBoard, eventBus, sock};

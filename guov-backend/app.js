@@ -80,6 +80,10 @@ io.on('connection', (client) => {
     board_ctl.RemoveLane(client, req);
   });
 
+  client.on('updateCard', (req) => {
+    board_ctl.UpdateCard(client, req);
+  });
+
   //аутентификация
   client.on('login', (email, password) => {
     console.log('login attempt form ' + email);
@@ -213,23 +217,6 @@ function loadBoard(id){
     ]).then((res) => {
       //чтоб валидатор не матерился на клиенте - явный каст айдишника к строке
       res[0].lanes.forEach((lane) => {lane.id = '' + lane.id;});
-      console.log('collected:', JSON.stringify(res));
-      ok(res);
-    }).catch((err) => {fail(err);});
-  });
-}
-
-function loadBoardCards(){
-  return new Promise((ok, fail) => {
-    BoardMgr.Lane.aggregate([{
-      $lookup: {
-        from: 'cards',
-        localField: '_id',
-        foreignField: 'laneId',
-        as: 'cards'
-      }
-    }]).then((res) => {
-      res.forEach((lane) => {lane.id = '' + lane._id;});
       console.log('collected:', JSON.stringify(res));
       ok(res);
     }).catch((err) => {fail(err);});

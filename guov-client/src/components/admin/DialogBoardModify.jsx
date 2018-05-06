@@ -31,8 +31,8 @@ class DialogBoardModify extends React.Component {
             }
         });
 
-        this.props.sock.on('addLaneReply', (reply) => {
-            console.log('add reply:', reply);
+        this.props.sock.on('updateLaneReply', (reply) => {
+            console.log('update lane reply:', reply);
             if(reply.success){
                 let lanes = this.state.lanes;
                 lanes.push(reply.lane);

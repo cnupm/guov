@@ -6,16 +6,13 @@ import {AdminForm} from './components/AdminForm';
 import BoardsList from './components/BoardsList';
 import Subheader from 'material-ui/Subheader';
 import CircularProgress from 'material-ui/CircularProgress';
-import AppBar from 'material-ui/AppBar';
-import IconMenu from 'material-ui/IconMenu';
 import Snackbar from 'material-ui/Snackbar';
-import MenuItem from 'material-ui/MenuItem';
-import IconButton from 'material-ui/IconButton';
-import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
+import FlatButton from 'material-ui/FlatButton';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
 import { instanceOf } from 'prop-types';
 import { withCookies, Cookies } from 'react-cookie';
+import {Toolbar, ToolbarGroup} from 'material-ui/Toolbar';
 import './App.css';
 
 const muiTheme = getMuiTheme({
@@ -88,10 +85,9 @@ class App extends Component {
   }
 
   /**
-   * Gtht[jl yf ajhve htubcnhfwbb]
+   * Запрос на создание нового пользователя
    */
   onRegisterRequest = (evt) => {
-    let val = document.getElementById('email').value;
     this.setState({currentPage: 'signup'});
   }
 
@@ -181,26 +177,27 @@ class App extends Component {
    */
   BoardPage(){
     return <div>
-      <CardsBoard cards={this.state.board} />
+      <CardsBoard ref={(el) => this.boardRef = el} cards={this.state.board} />
     </div>;
   }
 
+  onAddLaneClick = () => {
+    console.log('add lane ->');
+    let board = this.state.board;
+    board.lanes.push({id: '123', title: 'new lane', cards: []});
+    //this.setState({board: board});
+    this.boardRef.updateLanes(board);
+  }
+
   RenderAppBar() {
-    //return '';
-    return <AppBar
-        title={<small>{this.state.email}</small>}
-        iconElementLeft={
-          <IconMenu
-            iconButtonElement={<IconButton><MoreVertIcon /></IconButton>}
-            anchorOrigin={{horizontal: 'left', vertical: 'top'}}
-            targetOrigin={{horizontal: 'left', vertical: 'top'}}
-          >
-            <MenuItem primaryText="Admin" onClick={this.onMenuAdmin}/>
-            <MenuItem primaryText="Settings" />
-            <MenuItem primaryText="Sign out" />
-          </IconMenu>
-        }
-      />
+    return <Toolbar>
+      <ToolbarGroup>
+        <FlatButton label="Управление" secondary={true} onClick={this.onMenuAdmin}/>
+        <FlatButton label="Список досок" primary={true} onClick={() => {this.setState({currentPage: 'boards_list'})}} />
+        { (this.state.currentPage === 'board') ?
+          <FlatButton label="Добавить колонку" primary={true} onClick={this.onAddLaneClick}/> : ''}
+      </ToolbarGroup>
+    </Toolbar>;
   }
 
   onBoardSelected = (board) => {
