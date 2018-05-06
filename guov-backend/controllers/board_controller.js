@@ -17,7 +17,8 @@ RemoveBoard = (client, id) => {
 };
 
 CreateLane = (client, req) => {
-    dal.Lane.create({boardId: req.boardId, title: req.title}, (err, lane) => {
+    dal.Lane.create({boardId: req.boardId, title: req.title, cards: []}, (err, lane) => {
+        console.log('created lane: ', JSON.stringify(lane));
         client.emit('addLaneReply', {success: err == null, lane: lane});
     });
 };

@@ -7,15 +7,8 @@ import {styles} from './AdminForm';
 
 class DialogEditCard extends React.Component{
 
-    constructor(props){
-        super(props);
-    }
-
     onSaveClick = () => {
-        console.log(this.refLabel.getValue());
-
         this.props.sock.on('updateCardReply', (reply) => {
-            console.log('card update reply: ', reply);
             this.props.onRequestClose(true, reply);
         });
 

@@ -182,11 +182,7 @@ class App extends Component {
   }
 
   onAddLaneClick = () => {
-    console.log('add lane ->');
-    let board = this.state.board;
-    board.lanes.push({id: '123', title: 'new lane', cards: []});
-    //this.setState({board: board});
-    this.boardRef.updateLanes(board);
+    this.boardRef.showCreateLane();
   }
 
   RenderAppBar() {
