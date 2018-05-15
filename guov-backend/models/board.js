@@ -14,10 +14,11 @@ Lane_.plugin(dal.autoIncrement.plugin, 'Lane');
 var Lane = db.model("Lane", Lane_);
 
 var Card_ = new db.Schema({
-    title: {type: String, required: true},
-    label: {type: String, required: false},
-    description: {type: String, required: false},
+    responsible: {type: String, required: true},
+    createdAt: {type: String, required: true},
+    deadlineAt: {type: String, required: false},
     laneId: {type: Number, required: true},
+    comments: {type: String, required: false}
     id: {type: String, required: true}
 });
 var Card = db.model("Card", Card_);

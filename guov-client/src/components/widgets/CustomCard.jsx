@@ -2,6 +2,9 @@ import React from 'react';
 import {CardHeader, CardRightContent, CardTitle, Detail, Footer, MovableCardWrapper} from '../../styles/Base'
 import Tag from '../Tag'
 
+/**
+ * Компонент для отображения карточек
+ */
 class CustomCard extends React.Component {
     removeCard = e => {
       const {id, laneId, removeCard, onDelete} = this.props

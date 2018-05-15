@@ -1,5 +1,7 @@
 import React,{Component} from 'react';
-
+import * as Datetime from 'react-datetime';
+var moment = require('moment');
+require('moment/locale/ru');
 
 /**
 * Шаблон для создания новой карточки
@@ -20,14 +22,20 @@ class NewCard extends Component {
         <div style={{padding: 5, margin: 5}}>
           <div>
             <div style={{marginBottom: 5}}>
-              <input type="text" onChange={evt => this.updateField('title', evt)} placeholder="Titles" />
+              <input type="text" onChange={evt => this.updateField('responsible', evt)} placeholder="Ответственный" />
+            </div>
+            <div style={{marginBottom: 5, marginTop: 5}}>
+              <Datetime inputProps={{ placeholder: 'Дата создания', disabled: false }} />
             </div>
             <div style={{marginBottom: 5}}>
-              <input type="text" onChange={evt => this.updateField('description', evt)} placeholder="Description" />
+              <Datetime inputProps={{ placeholder: 'Дата завершения', disabled: false }} />
+            </div>
+            <div style={{marginBottom: 5}}>
+              <input type="text" onChange={evt => this.updateField('comments', evt)} placeholder="Комментарии" />
             </div>
           </div>
-          <button onClick={this.handleAdd}>Add</button>
-          <button onClick={onCancel}>Cancel</button>
+          <button onClick={this.handleAdd}>Сохранить</button>
+          <button onClick={onCancel}>Отмена</button>
         </div>
       </div>
     )

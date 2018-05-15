@@ -6,6 +6,7 @@ import openSocket from 'socket.io-client';
 import NewCard from './widgets/NewCard'
 import CustomCard from './widgets/CustomCard'
 
+//TODO: это надо вынести в конфиг
 let sock = openSocket("http://109.173.112.19:8000");
 
 /**

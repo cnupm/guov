@@ -35,8 +35,9 @@ io.on('connection', (client) => {
   //добавление новой карты
   client.on('cardAdded', (card, lane) => {
     console.log('card added: ' + JSON.stringify(card));
-    BoardMgr.Card.create({id: card.id, title: card.title,
-      description: card.description, label: card.label, laneId: lane}, (err, mdl) => {
+    BoardMgr.Card.create({id: card.id, responsible: card.responsible,
+      createdAt: card.createdAt, deadlineAt: card.deadlineAt,
+      comments: card.comments, laneId: lane}, (err, mdl) => {
         if(err == null && mdl != null){
           client.broadcast.emit('cardAdded', {card: card, laneId: lane});
         } else {
