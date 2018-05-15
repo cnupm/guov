@@ -17,6 +17,7 @@ const styles = {
     }
 };
 
+
 class BoardsList extends React.Component {
     constructor(props){
         super(props);

@@ -3,6 +3,8 @@ import Board from 'react-trello';
 import DialogEditCard from './DialogEditCard'
 import DialogCreateLane from './DialogCreateLane';
 import openSocket from 'socket.io-client';
+import NewCard from './widgets/NewCard'
+import CustomCard from './widgets/CustomCard'
 
 let sock = openSocket("http://109.173.112.19:8000");
 
@@ -138,7 +140,11 @@ class CardsBoard extends React.Component{
       editable={true} handleDragStart={onCardDragStart}
       handleDragEnd={onCardDragEnd} onCardAdd={onCardAdded}
       eventBusHandle={this.setEventBus} onCardDelete={onCardDelete}
-      onCardClick={this.onCardClick}/>;
+      onCardClick={this.onCardClick}
+      //onCardClick={(cardId, metadata) => alert(`Card with id:${cardId} clicked.`)}
+      customCardLayout newCardTemplate={<NewCard />}>
+        <CustomCard/>
+      </Board>
   }
 }
 
