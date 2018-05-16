@@ -25,7 +25,7 @@ class NewCard extends Component {
               <input type="text" onChange={evt => this.updateField('responsible', evt)} placeholder="Ответственный" />
             </div>
             <div style={{marginBottom: 5, marginTop: 5}}>
-              <Datetime inputProps={{ placeholder: 'Дата создания', disabled: false }} />
+              <Datetime closeOnSelect={true} inputProps={{placeholder: 'Дата создания', open:false }} />
             </div>
             <div style={{marginBottom: 5}}>
               <Datetime inputProps={{ placeholder: 'Дата завершения', disabled: false }} />
