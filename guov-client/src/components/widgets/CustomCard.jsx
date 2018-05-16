@@ -18,14 +18,17 @@ class CustomCard extends React.Component {
         const {customCard, ...otherProps} = this.props
         return React.cloneElement(customCard, {...otherProps})
       } else {
-        const {title, description, label, tags} = this.props
+        const {responsible, createdAt, deadlineAt, comments, tags} = this.props
         return (
           <span>
             <CardHeader>
-              <CardTitle>{title}</CardTitle>
-              <CardRightContent>{label}</CardRightContent>
+              <CardTitle>{responsible}</CardTitle>
             </CardHeader>
-            <Detail>{description}</Detail>
+            <CardTitle>Сроки</CardTitle>
+            <Detail>Создано: {new String(createdAt)}</Detail>
+            <Detail>Завершить: {new String(deadlineAt)}</Detail>
+            <CardTitle>Отметки</CardTitle>
+            <Detail>{comments}</Detail>
             {tags && <Footer>{tags.map(tag => <Tag key={tag.title} {...tag} tagStyle={this.props.tagStyle} />)}</Footer>}
           </span>
         )

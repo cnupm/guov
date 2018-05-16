@@ -8,7 +8,11 @@ require('moment/locale/ru');
 */
 class NewCard extends Component {
   updateField = (field, evt) => {
-    this.setState({[field]: evt.target.value})
+    if(evt.target){ //обычный контрол или реактовский datetime?
+      this.setState({[field]: evt.target.value});
+    } else if(evt._d) {
+      this.setState({[field]: evt._d.toLocaleDateString()});
+    }
   }
 
   handleAdd = () => {
@@ -25,10 +29,11 @@ class NewCard extends Component {
               <input type="text" onChange={evt => this.updateField('responsible', evt)} placeholder="Ответственный" />
             </div>
             <div style={{marginBottom: 5, marginTop: 5}}>
-              <Datetime closeOnSelect={true} inputProps={{placeholder: 'Дата создания', open:false }} />
+              <Datetime dateFormat="YYYY-MM-DD" timeFormat={false} closeOnSelect={true} onChange={evt => this.updateField('createdAt', evt)}
+              inputProps={{placeholder: 'Дата создания', open:false }} />
             </div>
             <div style={{marginBottom: 5}}>
-              <Datetime inputProps={{ placeholder: 'Дата завершения', disabled: false }} />
+              <Datetime closeOnSelect={true} dateFormat="YYYY-MM-DD" timeFormat={false} onChange={evt => this.updateField('deadlineAt', evt)} inputProps={{ placeholder: 'Дата завершения', disabled: false }} />
             </div>
             <div style={{marginBottom: 5}}>
               <input type="text" onChange={evt => this.updateField('comments', evt)} placeholder="Комментарии" />

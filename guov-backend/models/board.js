@@ -32,7 +32,7 @@ var Card = db.model("Card", Card_);
  */
 var Comment_ = new db.Schema({
     cardId: {type: String, required: true},
-    author: {type: ObjectId, required: true},
+    author: {type: db.Schema.Types.ObjectId, required: true},
     text: {type: String, required: true}
 });
 var Comment = db.model("Comment", Comment_);
